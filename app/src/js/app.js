@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
 
 	// Custom JS
-	console.log(document);
+	//var bigNumber = Number.POSITIVE_INFINITY;
+	console.log(document.getElementsByClassName('.canvas'));
 
 });
