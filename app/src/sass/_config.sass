@@ -38,16 +38,19 @@ $gutter: $grid-gutter-width
 
 
 // GENERAL DOCUMENT STYLES
-
 ::placeholder
 	color: #666
 
 ::selection
-	background: inherit
-	color: inherit
+	background: red
+	color: blue
 
 html
 	cursor: default
+	-webkit-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none 
 
 input, textarea
 	outline: none

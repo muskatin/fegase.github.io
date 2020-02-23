@@ -1,3 +1,5 @@
+//Inspired by Unreal Blueprints
+//https://miro.medium.com/max/1530/0*IOWa8inIO1h1Y_Fi.png
 //let projectname = 'name';
 let preprocessor = 'sass'; // Preprocessor (sass, scss, less, styl)
 let fileswatch   = 'html,htm,txt,json,md,woff2'; // List of files extensions for watching & hard reload (comma separated)
