@@ -83,10 +83,15 @@ document.addEventListener("DOMContentLoaded", function() {
 	  
 		function finishDrag(e) {
 		  var dropElem = findDroppable(e);
+		  var avatar = dragObject.avatar;
 	  
+		  avatar.classList.remove("Draggable");
+		  avatar.classList.add("stayDrag");
 		  if (!dropElem) {
+			  console.log('1')//
 			//self.onDragCancel(dragObject);
 		  } else {
+			console.log('2')//
 			self.onDragEnd(dragObject, dropElem);
 		  }
 		}
@@ -121,8 +126,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	  
 		  // инициировать начало переноса
 		  //document.body.appendChild(avatar);
-		  avatar.style.zIndex = 9999;
-		  avatar.style.position = 'absolute';
+		  avatar.classList.add("Draggable");
+		  avatar.classList.remove("stayDrag");
+		  //avatar.style.zIndex = 9999; //move to css .Draggable
+		  //avatar.style.position = 'absolute'; //move to css .Draggable
 		}
 	  
 		function findDroppable(event) {

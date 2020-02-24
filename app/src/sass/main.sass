@@ -5,6 +5,7 @@
     overflow: auto
 .cNode
     width: 180px
+    z-index: 1999
     //margin: 5em auto
     padding: 8px
     background-color: #1c1d22
@@ -12,6 +13,13 @@
     text-align: center
     border-top: solid 3px
     cursor: pointer
+    &.Draggable
+        opacity: .8
+        z-index: 9999
+        position: absolute
+    &.stayDrag
+        //z-index: 9999
+        position: absolute
     &.test
         border-color: silver
     &.Number
@@ -23,15 +31,15 @@
     &.boolean
         border-color: red
     &.null
-        border-color: pink
+        border-color: silver
     &.undefined
-        border-color: violet
+        border-color: silver
     &.object
         border-color: blue
     &.symbol
         border-color: cyan
     &.typeof
-        border-color: gold
+        border-color: violet
     //border-top: solid 3px #cb3837
 
 p
