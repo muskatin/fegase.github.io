@@ -88,10 +88,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		  avatar.classList.remove("Draggable");//
 		  avatar.classList.add("stayDrag");//
 		  if (!dropElem) {
-			  console.log('1')//
+				console.log('!dropElem')//
 			self.onDragCancel(dragObject);
 		  } else {
-			console.log('2')//
+				console.log('dropElem')//
 			self.onDragEnd(dragObject, dropElem);
 		  }
 		}
