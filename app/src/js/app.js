@@ -2,41 +2,40 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	// Custom JS
 	//var bigNumber = Number.POSITIVE_INFINITY;
-	console.log(dNone);
+	console.log(console);
 
 	//drag
+    var cNode = document.getElementById('cNode');
 
-    var dNone = document.getElementById('testNone');
+    cNode.onmousedown = function(e) {
 
-    dNone.onmousedown = function(e) {
-
-      var coords = getCoords(dNone);
+      var coords = getCoords(cNode);
       var shiftX = e.pageX - coords.left;
       var shiftY = e.pageY - coords.top;
 
-      dNone.style.position = 'absolute';
-      document.body.appendChild(dNone);
+      cNode.style.position = 'absolute';
+      //document.body.appendChild(cNode);
       moveAt(e);
 
-      dNone.style.zIndex = 1000; // над другими элементами
+      cNode.style.zIndex = 1000; // над другими элементами
 
       function moveAt(e) {
-        dNone.style.left = e.pageX - shiftX + 'px';
-        dNone.style.top = e.pageY - shiftY + 'px';
+        cNode.style.left = e.pageX - shiftX + 'px';
+        cNode.style.top = e.pageY - shiftY + 'px';
       }
 
       document.onmousemove = function(e) {
         moveAt(e);
       };
 
-      dNone.onmouseup = function() {
+      cNode.onmouseup = function() {
         document.onmousemove = null;
-        dNone.onmouseup = null;
+        cNode.onmouseup = null;
       };
 
     }
 
-    dNone.ondragstart = function() {
+    cNode.ondragstart = function() {
       return false;
     };
 
@@ -50,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function() {
       };
 
     }
-	console.log(dNone);
 
 });
 
