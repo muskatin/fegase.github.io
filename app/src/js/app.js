@@ -1,347 +1,167 @@
 document.addEventListener("DOMContentLoaded", function() {
-
+	//https://josephernest.github.io/bigpicture.js/index.html
 	// Custom JS
 	//var bigNumber = Number.POSITIVE_INFINITY;
 	//console.log(console);
 
 	//drag
-    var cNode = document.getElementById('cNode');
+	var DragManager = new function() {
 
-    cNode.onmousedown = function(e) {
-
-      var coords = getCoords(cNode);
-      var shiftX = e.pageX - coords.left;
-      var shiftY = e.pageY - coords.top;
-
-      cNode.style.position = 'absolute';
-      //document.body.appendChild(cNode);
-      moveAt(e);
-
-      cNode.style.zIndex = 1000; // над другими элементами
-
-      function moveAt(e) {
-        cNode.style.left = e.pageX - shiftX + 'px';
-        cNode.style.top = e.pageY - shiftY + 'px';
-      }
-
-      document.onmousemove = function(e) {
-        moveAt(e);
-      };
-
-      cNode.onmouseup = function() {
-        document.onmousemove = null;
-        cNode.onmouseup = null;
-      };
-
-    }
-
-    cNode.ondragstart = function() {
-      return false;
-    };
-
-
-    function getCoords(elem) { // кроме IE8-
-      var box = elem.getBoundingClientRect();
-
-      return {
-        top: box.top + pageYOffset,
-        left: box.left + pageXOffset
-      };
-
-    }
-
-	//scroll
-var bigpicture = (function() {
-	"use strict";
-  
-	/*
-	 * INITIALIZATION
-	 */
-  
-	var bpContainer = document.getElementById('bigpicture-container'),
-	  bp = document.getElementById('bigpicture-container');//bigpicture
-	  console.log(bp)
-  
-	if (!bp) { return; }
-  
-	bp.setAttribute('spellcheck', false);
-  
-	var params = { x: getQueryVariable('x'), y: getQueryVariable('y'), zoom: getQueryVariable('zoom') };
-  
-	var current = {};
-	current.x = params.x ? parseFloat(params.x) : $(bp).data('x');
-	current.y = params.y ? parseFloat(params.y) : $(bp).data('y');
-	current.zoom = params.zoom ? parseFloat(params.zoom) : $(bp).data('zoom');
-  
-	bp.x = 0; bp.y = 0;
-	bp.updateContainerPosition = function() { bp.style.left = bp.x + 'px'; bp.style.top = bp.y + 'px'; };
-  
-	/*
-	 * TEXT BOXES
-	 */
-  
-	$(".text").each(function() { updateTextPosition(this); });     // initialization
-  
-	$(bp).on('blur', '.text', function() { if ($(this).text().replace(/^\s+|\s+$/g, '') === '') { $(this).remove(); } });
-  
-	$(bp).on('input', '.text', function() { redoSearch = true; });
-  
-	function updateTextPosition(e) {
-	  e.style.fontSize = $(e).data("size") / current.zoom + 'px';
-	  e.style.left = ($(e).data("x") - current.x) / current.zoom - bp.x + 'px';
-	  e.style.top = ($(e).data("y") - current.y) / current.zoom - bp.y + 'px';
-	}
-  
-	function newText(x, y, size, text) {
-	  var tb = document.createElement('div');
-	  tb.className = "text";
-	  tb.contentEditable = true;
-	  tb.innerHTML = text;
-	  $(tb).data("x", x).data("y", y).data("size", size);
-	  updateTextPosition(tb);
-	  bp.appendChild(tb);
-	  return tb;
-	}
-  
-	bpContainer.onclick = function(e) {
-	  if (isContainedByClass(e.target, 'text')) { return; }
-	  newText(current.x + (e.clientX) * current.zoom, current.y + (e.clientY) * current.zoom, 20 * current.zoom, '').focus();
-	};
-  
-	/*
-	 * PAN AND MOVE
-	 */
-  
-	var movingText = null,
-	  dragging = false,
-	  previousMousePosition;
-  
-	bpContainer.onmousedown = function(e) {
-	  if ($(e.target).hasClass('text') && (e.ctrlKey || e.metaKey)) {
-		movingText = e.target;
-		movingText.className = "text noselect notransition";
-	  }
-	  else {
-		movingText = null;
-		dragging = true;
-	  }
-	  biggestPictureSeen = false;
-	  previousMousePosition = { x: e.pageX, y: e.pageY };
-	};
-  
-	window.onmouseup = function() {
-	  dragging = false;
-	  if (movingText) { movingText.className = "text"; }
-	  movingText = null;
-	};
-  
-	bpContainer.ondragstart = function(e) {
-	  e.preventDefault();
-	};
-  
-	bpContainer.onmousemove = function(e) {
-	  if (dragging && !e.shiftKey) {       // SHIFT prevents panning / allows selection
-		bp.style.transitionDuration = "0s";
-		bp.x += e.pageX - previousMousePosition.x;
-		bp.y += e.pageY - previousMousePosition.y;
-		bp.updateContainerPosition();
-		current.x -= (e.pageX - previousMousePosition.x) * current.zoom;
-		current.y -= (e.pageY - previousMousePosition.y) * current.zoom;
-		previousMousePosition = { x: e.pageX, y: e.pageY };
-	  }
-	  if (movingText) {
-		$(movingText).data("x", $(movingText).data("x") + (e.pageX - previousMousePosition.x) * current.zoom);
-		$(movingText).data("y", $(movingText).data("y") + (e.pageY - previousMousePosition.y) * current.zoom);
-		updateTextPosition(movingText);
-		previousMousePosition = { x: e.pageX, y: e.pageY };
-	  }
-	};
-  
-	/*
-	 * ZOOM
-	 */
-  
-	bpContainer.ondblclick = function(e) {
-	  e.preventDefault();
-	  onZoom((e.ctrlKey || e.metaKey) ? current.zoom * 1.7 * 1.7 : current.zoom / 1.7 / 1.7, current.x + e.clientX * current.zoom, current.y + e.clientY * current.zoom, e.clientX, e.clientY);
-	};
-  
-	var biggestPictureSeen = false,
-	  previous;
-  
-	function onZoom(zoom, wx, wy, sx, sy) {  // zoom on (wx, wy) (world coordinates) which will be placed on (sx, sy) (screen coordinates)
-	  wx = (typeof wx === "undefined") ? current.x + window.innerWidth / 2 * current.zoom : wx;
-	  wy = (typeof wy === "undefined") ? current.y + window.innerHeight / 2 * current.zoom : wy;
-	  sx = (typeof sx === "undefined") ? window.innerWidth / 2  : sx;
-	  sy = (typeof sy === "undefined") ? window.innerHeight / 2 : sy;
-  
-	  bp.style.transitionDuration = "0.2s";
-  
-	  bp.x = 0; bp.y = 0;
-	  bp.updateContainerPosition();
-	  current.x = wx - sx * zoom; current.y = wy - sy * zoom; current.zoom = zoom;
-  
-	  $(".text").each(function() { updateTextPosition(this); });
-  
-	  biggestPictureSeen = false;
-	}
-  
-	function zoomOnText(res) {
-	  onZoom($(res).data('size') / 20, $(res).data('x'), $(res).data('y'));
-	}
-  
-	function seeBiggestPicture(e) {
-	  e.preventDefault();
-	  document.activeElement.blur();
-	  function universeboundingrect() {
-		var minX = Infinity, maxX = - Infinity, minY = Infinity, maxY = - Infinity;
-		var texteelements = document.getElementsByClassName('text');
-		[].forEach.call(texteelements, function(elt) {
-		  var rect2 = elt.getBoundingClientRect();
-		  var rect = { left: $(elt).data("x"),
-					   top: $(elt).data("y"),
-					   right: (rect2.width > 2 && rect2.width < 10000) ? current.x + rect2.right * current.zoom : $(elt).data("x") + 300 * $(elt).data("size") / 20,
-					   bottom: (rect2.height > 2 && rect2.height < 10000) ? current.y + rect2.bottom * current.zoom : $(elt).data("y") + 100 * $(elt).data("size") / 20 };
-		  if (rect.left < minX) { minX = rect.left; }
-		  if (rect.right > maxX) { maxX = rect.right; }
-		  if (rect.top < minY) { minY = rect.top; }
-		  if (rect.bottom > maxY) { maxY = rect.bottom; }
-		});
-		return { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
-	  }
-  
-	  var texts = document.getElementsByClassName('text');
-	  if (texts.length === 0) { return; } 
-	  if (texts.length === 1) { zoomOnText(texts[0]); return; }
-  
-	  if (!biggestPictureSeen) {
-		previous = { x: current.x, y: current.y, zoom: current.zoom };
-		var rect = universeboundingrect();
-		var zoom = Math.max((rect.maxX - rect.minX) / window.innerWidth, (rect.maxY - rect.minY) / window.innerHeight) * 1.1;
-		onZoom(zoom, (rect.minX + rect.maxX) / 2, (rect.minY + rect.maxY) / 2);
-		biggestPictureSeen = true;
-	  }
-	  else {
-		onZoom(previous.zoom, previous.x, previous.y, 0, 0);
-		biggestPictureSeen = false;
-	  }
-	}
-  
-	/*
-	 * SEARCH
-	 */
-  
-	var results = { index: -1, elements: [], text: "" },
-	  redoSearch = true,
-	  query;
-  
-	function find(txt) {
-	  results = { index: -1, elements: [], text: txt };
-	  $(".text").each(function() {
-		if ($(this).text().toLowerCase().indexOf(txt.toLowerCase()) != -1) { results.elements.push(this); }
-	  });
-	  if (results.elements.length > 0) { results.index = 0; }
-	}
-  
-	function findNext(txt) {
-	  if (!txt || txt.replace(/^\s+|\s+$/g, '') === '') { return; }   // empty search
-	  if (results.index == -1 || results.text != txt || redoSearch) {
-		find(txt);
-		if (results.index == -1) { return; }       // still no results
-		redoSearch = false;
-	  }
-	  var res = results.elements[results.index];
-	  zoomOnText(res);
-	  results.index += 1;
-	  if (results.index == results.elements.length) { results.index = 0; }  // loop
-	}
-  
-	/*
-	 * MOUSEWHEEL
-	 */
-  
-	var mousewheeldelta = 0, 
-	  last_e, 
-	  mousewheeltimer = null, 
-	  mousewheel;
-  
-	if (navigator.appVersion.indexOf("Mac") != -1) {   // Mac OS X
-	  mousewheel = function(e) {
-		e.preventDefault();
-		mousewheeldelta += Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-		last_e = e;
-		if (!mousewheeltimer) {
-		  mousewheeltimer = setTimeout(function() {
-			onZoom((mousewheeldelta > 0) ? current.zoom / 1.7 : current.zoom * 1.7, current.x + last_e.clientX * current.zoom, current.y + last_e.clientY * current.zoom, last_e.clientX, last_e.clientY);
-			mousewheeldelta = 0;
-			mousewheeltimer = null; }, 70);
+		/**
+		 * составной объект для хранения информации о переносе:
+		 * {
+		 *   elem - элемент, на котором была зажата мышь
+		 *   avatar - аватар
+		 *   downX/downY - координаты, на которых был mousedown
+		 *   shiftX/shiftY - относительный сдвиг курсора от угла элемента
+		 * }
+		 */
+		var dragObject = {};
+	  
+		var self = this;
+	  
+		function onMouseDown(e) {
+	  
+		  if (e.which != 1) return;
+	  
+		  var elem = e.target.closest('.cNode');
+		  if (!elem) return;
+	  
+		  dragObject.elem = elem;
+	  
+		  // запомним, что элемент нажат на текущих координатах pageX/pageY
+		  dragObject.downX = e.pageX;
+		  dragObject.downY = e.pageY;
+	  
+		  return false;
 		}
+	  
+		function onMouseMove(e) {
+		  if (!dragObject.elem) return; // элемент не зажат
+	  
+		  if (!dragObject.avatar) { // если перенос не начат...
+			var moveX = e.pageX - dragObject.downX;
+			var moveY = e.pageY - dragObject.downY;
+	  
+			// если мышь передвинулась в нажатом состоянии недостаточно далеко
+			if (Math.abs(moveX) < 3 && Math.abs(moveY) < 3) {
+			  return;
+			}
+	  
+			// начинаем перенос
+			dragObject.avatar = createAvatar(e); // создать аватар
+			if (!dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
+			  dragObject = {};
+			  return;
+			}
+	  
+			// аватар создан успешно
+			// создать вспомогательные свойства shiftX/shiftY
+			var coords = getCoords(dragObject.avatar);
+			dragObject.shiftX = dragObject.downX - coords.left;
+			dragObject.shiftY = dragObject.downY - coords.top;
+	  
+			startDrag(e); // отобразить начало переноса
+		  }
+	  
+		  // отобразить перенос объекта при каждом движении мыши
+		  dragObject.avatar.style.left = e.pageX - dragObject.shiftX + 'px';
+		  dragObject.avatar.style.top = e.pageY - dragObject.shiftY + 'px';
+	  
+		  return false;
+		}
+	  
+		function onMouseUp(e) {
+		  if (dragObject.avatar) { // если перенос идет
+			finishDrag(e);
+		  }
+	  
+		  // перенос либо не начинался, либо завершился
+		  // в любом случае очистим "состояние переноса" dragObject
+		  dragObject = {};
+		}
+	  
+		function finishDrag(e) {
+		  var dropElem = findDroppable(e);
+	  
+		  if (!dropElem) {
+			//self.onDragCancel(dragObject);
+		  } else {
+			self.onDragEnd(dragObject, dropElem);
+		  }
+		}
+	  
+		function createAvatar(e) {
+	  
+		  // запомнить старые свойства, чтобы вернуться к ним при отмене переноса
+		  var avatar = dragObject.elem;
+		  var old = {
+			parent: avatar.parentNode,
+			nextSibling: avatar.nextSibling,
+			position: avatar.position || '',
+			left: avatar.left || '',
+			top: avatar.top || '',
+			zIndex: avatar.zIndex || ''
+		  };
+	  
+		  // функция для отмены переноса
+		  avatar.rollback = function() {
+			old.parent.insertBefore(avatar, old.nextSibling);
+			avatar.style.position = old.position;
+			avatar.style.left = old.left;
+			avatar.style.top = old.top;
+			avatar.style.zIndex = old.zIndex
+		  };
+	  
+		  return avatar;
+		}
+	  
+		function startDrag(e) {
+		  var avatar = dragObject.avatar;
+	  
+		  // инициировать начало переноса
+		  //document.body.appendChild(avatar);
+		  avatar.style.zIndex = 9999;
+		  avatar.style.position = 'absolute';
+		}
+	  
+		function findDroppable(event) {
+		  // спрячем переносимый элемент
+		  dragObject.avatar.hidden = true;
+	  
+		  // получить самый вложенный элемент под курсором мыши
+		  var elem = document.elementFromPoint(event.clientX, event.clientY);
+	  
+		  // показать переносимый элемент обратно
+		  dragObject.avatar.hidden = false;
+	  
+		  if (elem == null) {
+			// такое возможно, если курсор мыши "вылетел" за границу окна
+			return null;
+		  }
+	  
+		  return elem.closest('.destroy');
+		}
+	  
+		document.onmousemove = onMouseMove;
+		document.onmouseup = onMouseUp;
+		document.onmousedown = onMouseDown;
+	  
+		this.onDragEnd = function(dragObject, dropElem) {};
+		this.onDragCancel = function(dragObject) {};
+	  
 	  };
-	}
-	else {
-	  mousewheel = function(e) {
-		e.preventDefault();
-		var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-		onZoom((delta > 0) ? current.zoom / 1.7 : current.zoom * 1.7, current.x + e.clientX * current.zoom, current.y + e.clientY * current.zoom, e.clientX, e.clientY);
-	  };
-	}
-  
-	if ("onmousewheel" in document) { bpContainer.onmousewheel = mousewheel; }
-	else { bpContainer.addEventListener('DOMMouseScroll', mousewheel, false); }
-  
-	/*
-	 * KEYBOARD SHORTCUTS
-	 */
-  
-	window.onkeydown = function(e) {
-	  if (((e.ctrlKey && !e.altKey || e.metaKey) && (e.keyCode == 61 || e.keyCode == 187 || e.keyCode == 171 || e.keyCode == 107 || e.key == '+' || e.key == '=' ))   // CTRL+PLUS or COMMAND+PLUS 
-	  || e.keyCode == 34) {   // PAGE DOWN     // !e.altKey to prevent catching of ALT-GR 
-		e.preventDefault();
-		onZoom(current.zoom / 1.7);
-		return;
+	  
+	  
+	  function getCoords(elem) { // кроме IE8-
+		var box = elem.getBoundingClientRect();
+	  
+		return {
+		  top: box.top + pageYOffset,
+		  left: box.left + pageXOffset
+		};
+	  
 	  }
-	  if (((e.ctrlKey && !e.altKey || e.metaKey) && (e.keyCode == 54 || e.keyCode == 189 || e.keyCode == 173 || e.keyCode == 167 || e.keyCode == 109 || e.keyCode == 169 || e.keyCode == 219 || e.key == '-' ))   // CTRL+MINUS or COMMAND+MINUS
-	  || e.keyCode == 33) {   // PAGE UP
-		e.preventDefault();
-		onZoom(current.zoom * 1.7);
-		console.log('window')
-		return;
-	  }
-	  if ((e.ctrlKey && !e.altKey || e.metaKey) && e.keyCode == 70) {         // CTRL+F
-		e.preventDefault();
-		setTimeout(function() { query = window.prompt("Что то ищем?", ""); findNext(query); }, 10);
-		return;
-	  }
-	  if (e.keyCode == 114) {                 // F3
-		e.preventDefault();
-		if (results.index == -1) { setTimeout(function() { query = window.prompt("Что то ищем?", ""); findNext(query); }, 10); }
-		else { findNext(query); }
-		return;
-	  }
-	  if (e.keyCode == 113) {                 // F2
-		e.preventDefault();
-		seeBiggestPicture(e);
-		return;
-	  }
-	};
-  
-	/*
-	 * USEFUL FUNCTIONS
-	 */
-  
-	function isContainedByClass(e, cls) { while (e && e.tagName) { if (e.classList.contains(cls)) { return true; } e = e.parentNode; } return false; }
-  
-	function getQueryVariable(id) { var params = window.location.search.substring(1).split("&");  for (var i = 0; i < params.length; i++) { var p = params[i].split("="); if (p[0] == id) { return p[1]; } } return(false); }
-  
-	/*
-	 * API
-	 */
-  
-	return { newText: newText, 
-			 current: current, 
-			 updateTextPosition: updateTextPosition };
-  
-  })();
-
+	//scroll
 
 });

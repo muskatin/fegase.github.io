@@ -2,16 +2,36 @@
 
 // CUSTOM USER STYLES
 .canvas
-    overflow: hidden
-.cNode-IdTest
+    overflow: auto
+.cNode
     width: 180px
     //margin: 5em auto
     padding: 8px
     background-color: #1c1d22
     border-radius: .2em
     text-align: center
-    border-top: solid 3px #a0a0a0
+    border-top: solid 3px
     cursor: pointer
+    &.test
+        border-color: silver
+    &.Number
+        border-color: green
+    &.BigInt
+        border-color: lightgreen
+    &.string
+        border-color: orange
+    &.boolean
+        border-color: red
+    &.null
+        border-color: pink
+    &.undefined
+        border-color: violet
+    &.object
+        border-color: blue
+    &.symbol
+        border-color: cyan
+    &.typeof
+        border-color: gold
     //border-top: solid 3px #cb3837
 
 p
@@ -20,12 +40,21 @@ code
     background-color: #2a2b30
     padding: 2px 4px
     border-radius: 2px
+.destroy
+    background: #1c1d22
+    width: 128px
+    height: 128px
+    margin: 12px
+    border-radius: .2em
+    top: 0
+    right: 0
+    position: fixed
 
 @media (max-width: 700px)
     body
         background-color: #2a2b30;
 
-    .cNode-IdTest
+    .cNode
         width: auto
         //margin: 0 auto
         border-radius: .2em
