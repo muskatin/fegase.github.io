@@ -75,6 +75,7 @@ function cleanimg() {
 
 // HTML
 function htmls() {
+	//console.log('html log')
 	return src('app/src/app.html')
 	.pipe(concat('index.html'))
 	.pipe(dest('app/dist'))
