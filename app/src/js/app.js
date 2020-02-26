@@ -124,9 +124,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	  
 		function startDrag(e) {
 		  var avatar = dragObject.avatar;
+		  var canvasPanel = document.getElementsByClassName("cNode").lastChild;
+		  document.getElementsByClassName("canvas").appendChild(canvasPanel);
+		  //var nodePanel
 	  
 		  // инициировать начало переноса
-		  //document.body.appendChild(avatar);
+		  document.canvas.appendChild(avatar);
 		  avatar.classList.add("Draggable");//
 		  avatar.classList.remove("stayDrag");//
 		  //avatar.style.zIndex = 9999; //move to css .Draggable

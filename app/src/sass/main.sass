@@ -3,6 +3,13 @@
 // CUSTOM USER STYLES
 .canvas
     overflow: auto
+.node-container
+    background: red
+    z-index: 99999
+    min-width: 180px
+    padding: 8px
+    min-height: 280px
+    position: fixed
 .cNode
     width: 180px
     z-index: 1999
@@ -13,7 +20,7 @@
     text-align: center
     border-top: solid 3px
     cursor: pointer
-    opacity: .9
+    opacity: 1
     transition: opacity .2s ease-in-out
     &.Draggable
         opacity: .2
