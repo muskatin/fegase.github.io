@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
 	//https://rete.js.org/#/issues
 	//https://josephernest.github.io/bigpicture.js/index.html
+	//https://puzzleweb.ru/javascript/examples/element_appendchild.php
 	// Custom JS
 	//var bigNumber = Number.POSITIVE_INFINITY;
 	//console.log(console);
