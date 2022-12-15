@@ -1,1 +1,1 @@
-<h2>empty readme :\</h2>
+<h2>empty :/</h2>
